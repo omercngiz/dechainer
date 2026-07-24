@@ -13,10 +13,12 @@ import org.robolectric.shadows.ShadowAccessibilityService
  *
  * [startBlockingService] builds the service and invokes `onServiceConnected` — which reads the
  * blocking prefs and starts listening — reflectively, because that callback is `protected` in the
- * framework and cannot be reached from this package without touching production code.
- * [windowStateEvent] and [textChangedEvent] build the minimal `AccessibilityEvent`s the active
- * blocking path consumes, and [startedActivity] reads back (without consuming) whatever activity
- * the service launched.
+ * framework and cannot be reached from this package.
+ * [windowStateEvent], [textChangedEvent] and [contentChangedEvent] build the minimal
+ * `AccessibilityEvent`s the tracking, active and passive blocking paths consume. The passive path
+ * reports enforcement through two observable channels: [startedActivity] reads back (without
+ * consuming) whatever activity the service launched, and [globalActionsPerformed] reads the global
+ * actions (e.g. `GLOBAL_ACTION_BACK`) the service dispatched.
  */
 
 fun startBlockingService(): DechainerAccessibilityService {
@@ -43,6 +45,15 @@ fun textChangedEvent(content: String): AccessibilityEvent =
         text.add(content)
     }
 
+fun contentChangedEvent(content: String): AccessibilityEvent =
+    AccessibilityEvent().apply {
+        eventType = AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
+        text.add(content)
+    }
+
 fun DechainerAccessibilityService.shadow(): ShadowAccessibilityService = Shadow.extract(this)
 
 fun DechainerAccessibilityService.startedActivity(): Intent? = shadow().peekNextStartedActivity()
+
+fun DechainerAccessibilityService.globalActionsPerformed(): List<Int> =
+    shadow().globalActionsPerformed
