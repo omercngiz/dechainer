@@ -1,5 +1,6 @@
 package io.github.warleysr.dechainer.support
 
+import io.github.warleysr.dechainer.viewmodels.ActivityBlockerViewModel
 import io.github.warleysr.dechainer.viewmodels.BlockedWordsViewModel
 
 /**
@@ -11,4 +12,6 @@ import io.github.warleysr.dechainer.viewmodels.BlockedWordsViewModel
 object Fixtures {
 
     fun blockedWordsViewModel() = BlockedWordsViewModel()
+
+    fun activityBlockerViewModel() = ActivityBlockerViewModel()
 }
