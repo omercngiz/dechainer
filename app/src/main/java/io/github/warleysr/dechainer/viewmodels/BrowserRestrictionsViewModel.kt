@@ -92,6 +92,8 @@ class BrowserRestrictionsViewModel : ViewModel() {
 
     fun saveOrUpdateList(id: String?, title: String, sitesString: String) {
         val sites = sitesString.lines().filter { it.isNotBlank() }.map { it.trim() }
+        // A null id falls back to a timestamp; two lists created in the same millisecond get the
+        // same id, so the second overwrites the first instead of being added as a distinct list.
         val newListId = id ?: System.currentTimeMillis().toString()
         val newList = BlockedList(newListId, title, sites)
 
